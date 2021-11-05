@@ -46,25 +46,32 @@ def count_clicks(url: str,
     headers = headers = {"Authorization": f"Bearer {BITLY_TOKEN}"}
     returns: Number of clicks: 1
     """
-    if parse.urlparse(url).scheme == "https":
-        url = parse.urlparse(url).netloc
+    url = parse.urlparse(url)
+    if url.scheme == "https":
+        url = url.netloc+url.path
+    else:
+        url = url.path
+
     address = f"https://api-ssl.bitly.com/v4/bitlinks/{url}/clicks"
     payload = {
         "unit": "month",
         "units": "-1"
     }
     response = requests.get(address, headers=headers, params=payload)
+
     if not response.ok:
-        return f"some errors in your link, status code: {response.status_code}"
+        return f"Something is getting wrong! server response: {response.json()['description']}"
 
     num_of_clicks = response.json()['link_clicks'][0]['clicks']
     return f"Number of clicks: {num_of_clicks}"
 
 
-def is_bitlink(url: str) -> bool:
+def is_bitlink(url: str,
+               headers: dict) -> bool:
     """Determines if a link has been shortened
 
     :param url: url entered by user with or without bit.ly
+    :param headers: headers including Token, which will be loaded into request
     :return: True or False, depends on the presence of 'bit.ly' in the url.
 
     :example:
@@ -72,9 +79,17 @@ def is_bitlink(url: str) -> bool:
     url = bit.ly/3mFwWQ2
     returns: True
     """
-    if "bit.ly" not in url:
-        return False
-    return True
+
+    url = parse.urlparse(url)
+    if url.scheme != '':
+        url = f"{url.netloc}{url.path}"
+    else:
+        url = url.path
+    address = "https://api-ssl.bitly.com/v4/expand"
+    json = {"bitlink_id": url}
+    if requests.post(address, headers=headers, json=json).ok:
+        return True
+    return False
 
 
 def run_script(url: str,
@@ -90,6 +105,6 @@ def run_script(url: str,
     url = bit.ly/3mFwWQ2
     returns: Number of clicks: 1
     """
-    if is_bitlink(url):
+    if is_bitlink(url, headers):
         return count_clicks(url, headers)
     return shorten_link(url, headers)
