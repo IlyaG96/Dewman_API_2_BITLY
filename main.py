@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 import os
 
 
-if __name__ == '__main__':
+def main():
     load_dotenv()
     BITLY_TOKEN = os.getenv("BITLY_TOKEN")
     headers = {"Authorization": f"Bearer {BITLY_TOKEN}"}
@@ -12,3 +12,7 @@ if __name__ == '__main__':
     parser.add_argument('url', help="Enter URL")
     url = parser.parse_args().url
     print(run_script(url, headers))
+
+
+if __name__ == '__main__':
+    main()
