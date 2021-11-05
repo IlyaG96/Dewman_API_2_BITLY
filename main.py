@@ -6,8 +6,8 @@ import os
 
 if __name__ == '__main__':
     load_dotenv()
-    TOKEN = os.getenv("BITLY_TOKEN")
-    headers = {"Authorization": f"Bearer {TOKEN}"}
+    BITLY_TOKEN = os.getenv("BITLY_TOKEN")
+    headers = {"Authorization": f"Bearer {BITLY_TOKEN}"}
     parser = ArgumentParser(description='Enter URL')
     parser.add_argument('url', help="Enter URL")
     url = parser.parse_args().url
