@@ -1,5 +1,6 @@
 import requests
-from pprint import pprint
+from urllib import parse
+
 
 def shorten_link(url: str,
                  headers: dict) -> str:
@@ -11,20 +12,20 @@ def shorten_link(url: str,
     string 'Here is your shorten link: {short_link}'
     """
 
-    if "https://" not in url and "http://" not in url:
+    if parse.urlparse(url).scheme not in ("http", "https"):
         return 'please add http:// or https:// to your address'
 
     address = "https://api-ssl.bitly.com/v4/bitlinks"
-    json = {"long_url": f"{url}"}
+    json = {"long_url": url}
     response = requests.post(address, headers=headers, json=json)
-    if response.status_code != 200:
+    if not response.ok:
         return f"some errors in your link, status code: {response.status_code}"
     short_link = response.json()['id']
     return f'Here is your shorten link: {short_link}'
 
 
 def count_clicks(url: str,
-                 headers: dict)-> str:
+                 headers: dict) -> str:
     """
     :param url: url entered by user
     :param headers: headers including Token, which will be loaded into request
@@ -32,15 +33,15 @@ def count_clicks(url: str,
     with code of the mistake or
     string 'f"Number of clicks: {num_of_clicks}'
     """
-    if "https://" in url:
-        url = url.split("https://")[1]
+    if parse.urlparse(url).scheme == "https":
+        url = parse.urlparse(url).netloc
     address = f"https://api-ssl.bitly.com/v4/bitlinks/{url}/clicks"
     payload = {
         "unit": "month",
         "units": "-1"
     }
     response = requests.get(address, headers=headers, params=payload)
-    if response.status_code != 200:
+    if not response.ok:
         return f"some errors in your link, status code: {response.status_code}"
 
     num_of_clicks = response.json()['link_clicks'][0]['clicks']
