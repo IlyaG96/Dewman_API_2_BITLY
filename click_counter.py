@@ -17,7 +17,7 @@ def shorten_link(url: str,
     headers = headers = {"Authorization": f"Bearer {BITLY_TOKEN}"}
     returns: Here is your shorten link: bit.ly/3mFwWQ2
     """
-
+    print("shorting")
     if parse.urlparse(url).scheme not in ("http", "https"):
         return 'please add http:// or https:// to your address'
 
@@ -47,21 +47,18 @@ def count_clicks(url: str,
     returns: Number of clicks: 1
     """
     url = parse.urlparse(url)
-    if url.scheme not in ("https", "http"):
+    if url.scheme in ("https", "http"):
         url = f'{url.netloc}{url.path}'
     else:
         url = url.path
-
     address = f"https://api-ssl.bitly.com/v4/bitlinks/{url}/clicks"
     payload = {
         "unit": "month",
         "units": "-1"
     }
     response = requests.get(address, headers=headers, params=payload)
-
     if not response.ok:
         return f"Something is getting wrong! server response: {response.json()['description']}"
-    print(response.json())
     num_of_clicks = response.json()['link_clicks'][0]['clicks']
     return f"Number of clicks: {num_of_clicks}"
 
@@ -81,7 +78,7 @@ def is_bitlink(url: str,
     """
 
     url = parse.urlparse(url)
-    if not url.scheme:
+    if url.scheme:
         url = f"{url.netloc}{url.path}"
     else:
         url = url.path
