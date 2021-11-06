@@ -47,8 +47,8 @@ def count_clicks(url: str,
     returns: Number of clicks: 1
     """
     url = parse.urlparse(url)
-    if url.scheme == "https":
-        url = url.netloc+url.path
+    if url.scheme not in ("https", "http"):
+        url = f'{url.netloc}{url.path}'
     else:
         url = url.path
 
@@ -61,7 +61,7 @@ def count_clicks(url: str,
 
     if not response.ok:
         return f"Something is getting wrong! server response: {response.json()['description']}"
-
+    print(response.json())
     num_of_clicks = response.json()['link_clicks'][0]['clicks']
     return f"Number of clicks: {num_of_clicks}"
 
@@ -81,7 +81,7 @@ def is_bitlink(url: str,
     """
 
     url = parse.urlparse(url)
-    if url.scheme != '':
+    if not url.scheme:
         url = f"{url.netloc}{url.path}"
     else:
         url = url.path
