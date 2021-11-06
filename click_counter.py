@@ -17,7 +17,6 @@ def shorten_link(url: str,
     headers = headers = {"Authorization": f"Bearer {BITLY_TOKEN}"}
     returns: Here is your shorten link: bit.ly/3mFwWQ2
     """
-    print("shorting")
     if parse.urlparse(url).scheme not in ("http", "https"):
         return 'please add http:// or https:// to your address'
 
@@ -82,11 +81,11 @@ def is_bitlink(url: str,
         url = f"{url.netloc}{url.path}"
     else:
         url = url.path
+
     address = "https://api-ssl.bitly.com/v4/expand"
     json = {"bitlink_id": url}
-    if requests.post(address, headers=headers, json=json).ok:
-        return True
-    return False
+    response = requests.post(address, headers=headers, json=json)
+    return True if response.ok else False
 
 
 def run_script(url: str,
@@ -102,6 +101,7 @@ def run_script(url: str,
     url = bit.ly/3mFwWQ2
     returns: Number of clicks: 1
     """
+
     if is_bitlink(url, headers):
         return count_clicks(url, headers)
     return shorten_link(url, headers)
