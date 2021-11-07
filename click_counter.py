@@ -81,10 +81,8 @@ def is_bitlink(url: str,
         url = f"{url.netloc}{url.path}"
     else:
         url = url.path
-
-    address = "https://api-ssl.bitly.com/v4/expand"
-    json = {"bitlink_id": url}
-    response = requests.post(address, headers=headers, json=json)
+    address = f"https://api-ssl.bitly.com/v4/bitlinks/{url}"
+    response = requests.get(address, headers=headers)
     return response.ok
 
 
