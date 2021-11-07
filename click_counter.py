@@ -50,7 +50,7 @@ def count_clicks(url: str,
         url = f'{url.netloc}{url.path}'
     else:
         url = url.path
-    address = f"https://api-ssl.bitly.com/v4/bitlinks/{url}/clicks"
+    address = f"https://api-ssl.bitly.com/v4/bitlinks/{url}/clicks/summary"
     payload = {
         "unit": "month",
         "units": "-1"
@@ -58,7 +58,7 @@ def count_clicks(url: str,
     response = requests.get(address, headers=headers, params=payload)
     if not response.ok:
         return f"Something is getting wrong! server response: {response.json()['description']}"
-    num_of_clicks = response.json()['link_clicks'][0]['clicks']
+    num_of_clicks = response.json()['total_clicks']
     return f"Number of clicks: {num_of_clicks}"
 
 
@@ -85,7 +85,7 @@ def is_bitlink(url: str,
     address = "https://api-ssl.bitly.com/v4/expand"
     json = {"bitlink_id": url}
     response = requests.post(address, headers=headers, json=json)
-    return True if response.ok else False
+    return response.ok
 
 
 def run_script(url: str,
