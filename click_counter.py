@@ -21,8 +21,8 @@ def shorten_link(url: str,
         return 'please add http:// or https:// to your address'
 
     address = "https://api-ssl.bitly.com/v4/bitlinks"
-    json = {"long_url": url}
-    response = requests.post(address, headers=headers, json=json)
+    data = {"long_url": url}
+    response = requests.post(address, headers=headers, json=data)
     if not response.ok:
         return f"some errors in your link, status code: {response.status_code}"
     short_link = response.json()['id']
